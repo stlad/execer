@@ -8,21 +8,36 @@ import (
 )
 
 var ErrorCMDNotFound = errors.New("терминал не найден для текущей системы")
+var ErrorOSNotHandle = errors.New("операционная система не поддерживается")
 
-func GetTerminal() (*exec.Cmd, error) {
-	var cmd *exec.Cmd
+type Executor interface {
+	Exec(string)
+}
+
+type PowershellExecutor struct {
+	cmd *exec.Cmd
+}
+
+func (executor PowershellExecutor) Exec(script string) {
+	executor.cmd.Args = append(executor.cmd.Args, script)
+	executor.cmd.Start()
+}
+
+func GetTerminal() (Executor, error) {
+	var executor Executor
 
 	switch runtime.GOOS {
 	case "windows":
-		cmd = exec.Command("powershell.exe", "-File")
+		var cmd = exec.Command("powershell.exe", "-ExecutionPolicy", "Bypass", )
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		executor = PowershellExecutor{cmd: cmd}
 	case "linux", "darwin":
-		cmd = exec.Command("/bin/sh", "-c")
+		// cmd = exec.Command("/bin/sh", "-c")
+		return nil, ErrorOSNotHandle
 	default:
 		return nil, ErrorCMDNotFound
 	}
 
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	return cmd, nil
+	return executor, nil
 }
