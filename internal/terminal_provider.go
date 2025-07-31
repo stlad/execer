@@ -18,8 +18,8 @@ type PowershellExecutor struct {
 	cmd *exec.Cmd
 }
 
-func (executor PowershellExecutor) Exec(script string) {
-	executor.cmd.Args = append(executor.cmd.Args, script)
+func (executor PowershellExecutor) Exec(scriptPath string) {
+	executor.cmd.Args = append(executor.cmd.Args, scriptPath)
 	executor.cmd.Start()
 }
 
@@ -28,7 +28,7 @@ func GetTerminal() (Executor, error) {
 
 	switch runtime.GOOS {
 	case "windows":
-		var cmd = exec.Command("powershell.exe", "-ExecutionPolicy", "Bypass", )
+		var cmd = exec.Command("powershell.exe", "-ExecutionPolicy", "Bypass")
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		executor = PowershellExecutor{cmd: cmd}
