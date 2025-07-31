@@ -3,14 +3,13 @@ package main
 import (
 	"execer/internal/command"
 	"flag"
-	"fmt"
+	"log"
 	"os"
 )
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Ожидается подкоманда")
-		os.Exit(1)
+		log.Fatal("Ожидается подкоманда")
 	}
 
 	switch os.Args[1] {
@@ -21,7 +20,6 @@ func main() {
 
 		command.CommandRun(*name)
 	default:
-		fmt.Printf("Неизвестная команда: %s\n", os.Args[1])
-		os.Exit(1)
+		log.Fatalf("Неизвестная команда: %s\n", os.Args[1])
 	}
 }

@@ -2,16 +2,26 @@ package command
 
 import (
 	"execer/internal/core"
+	"execer/internal/repository"
 	"log"
 )
 
-func CommandRun(aliasName string) {
-	log.Printf("Выполнение команды RUN для алиаса %s", aliasName)
+func CommandRun(aliasName string) error {
+	log.Printf("Выполнение команды RUN для алиаса \"%s\"", aliasName)
 
-	//TODO тут получение объекта alias из репозитория
-	var alias = core.Alias{Name: aliasName, ScriptPath: "C:\\Projects\\execer\\foo2.ps1"}
+	var repository = repository.GetAliasRepository()
+	var alias, notFoundError = repository.FindAlias(aliasName)
 
-	var executor, _ = core.GetTerminal()
+	if notFoundError != nil {
+		log.Fatal(notFoundError)
+	}
+
+	var executor, terminalError = core.GetTerminal()
+	if terminalError != nil {
+		log.Fatal(terminalError)
+	}
+
+	log.Printf("Исполнение команды \"%s\"", alias.Name)
 	executor.Exec(alias.ScriptPath)
-
+	return nil
 }
