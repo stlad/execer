@@ -22,6 +22,6 @@ func CommandRun(aliasName string) error {
 	}
 
 	log.Printf("Исполнение команды \"%s\"", alias.Name)
-	executor.Exec(alias.ScriptPath)
+	executor.Exec(alias.Script)
 	return nil
 }

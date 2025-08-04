@@ -1,14 +1,10 @@
 package core
 
-
-
-type Alias struct{
-	Name string;
-	ScriptPath string;
+type Alias struct {
+	Name   string
+	Script string
 }
 
-
-func newAlias(newName string, path string) *Alias{
-	return &Alias{Name: newName, ScriptPath: path}
+func NewAlias(newName string, script string) *Alias {
+	return &Alias{Name: newName, Script: script}
 }
-

@@ -2,8 +2,10 @@ package core
 
 import (
 	"errors"
+	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 )
 
@@ -18,10 +20,23 @@ type PowershellExecutor struct {
 	cmd *exec.Cmd
 }
 
-func (executor PowershellExecutor) Exec(scriptPath string) {
-	executor.cmd.Args = append(executor.cmd.Args, scriptPath)
+func (executor PowershellExecutor) Exec(script string) {
+	var tempDir, _ = os.Getwd()
+	tmpfile, err := os.CreateTemp(tempDir, "script-*.ps1")
+		if err != nil {
+		log.Fatal(err)
+	}
+	//TODO так как cmd.Start() запускается в отдельном потоке (видимо) - defer os.Remove() удаляет временный файл до торго как ps успевает запустить скрипт
+	defer os.Remove(tmpfile.Name())
+	// Записываем скрипт в файл
+	tmpfile.Write([]byte(script))
+	tmpfile.Close()
+	var tmpPath, _ = filepath.Abs(tmpfile.Name())
+	log.Println("path:",tmpPath)
+	executor.cmd.Args = append(executor.cmd.Args, tmpPath)
 	executor.cmd.Start()
 }
+
 
 func GetTerminal() (Executor, error) {
 	var executor Executor

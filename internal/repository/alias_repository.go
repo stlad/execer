@@ -27,17 +27,17 @@ func (repo LocalFileAliasRepository) FindAlias(name string) (*core.Alias, error)
 	//TODO Должны быть получение директории в зависимости от конфига
 	var lib = dir + "/resources"
 
-	var scriptPath, err = findFilePath(lib, name)
+	var script, err = getScriptText(lib, name)
 
 	if err != nil {
 		return nil, err
 	}
 
 	log.Printf("Команда с псеводнонимом \"%s\"", name)
-	return &core.Alias{Name: name, ScriptPath: scriptPath}, nil
+	return core.NewAlias(name, script), nil
 }
 
-func findFilePath(lib, name string) (string, error) {
+func getScriptText(lib, name string) (string, error) {
 
 	if _, err := os.Stat(lib); os.IsNotExist(err) {
 		log.Printf("Не найден каталог с скриптами. Создаем %s", lib)
@@ -47,10 +47,10 @@ func findFilePath(lib, name string) (string, error) {
 
 	//TODO СЕЙЧАС ЕСТЬ ЗАВИСИМОСТЬ .ps1 для powershell. Необходимо сделать так, чтобы файл находился, не зная его расширения
 	fullPath := filepath.Join(lib, name+".ps1")
-
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		return "", ErrorAliasNotFound
 	}
-
-	return fullPath, nil
+	var content, _ = os.ReadFile(fullPath)
+	log.Println("Текст полученного скрипта: ", string(content))
+	return string(content), nil
 }
