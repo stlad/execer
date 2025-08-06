@@ -22,10 +22,11 @@ type LocalFileAliasRepository struct{}
 
 func (repo LocalFileAliasRepository) FindAlias(name string) (*core.Alias, error) {
 	log.Printf("Ищем команду по псеводниму \"%s\"", name)
-	dir, _ := os.Getwd()
+	var path, _ = os.Executable()
+	dir := filepath.Dir(path)
 
 	//TODO Должны быть получение директории в зависимости от конфига
-	var lib = dir + "/resources"
+	var lib = filepath.Join(dir, "resources")
 
 	var scriptPath, err = findFilePath(lib, name)
 
